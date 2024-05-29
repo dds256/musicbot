@@ -26,45 +26,49 @@ async def upload_to_pastebin(content, title=None, visibility=None, expiration=No
         async with session.post(PASTEBIN_API_URL, data=data) as response:
             if response.status != 200:
                 return False, f"HTTP Error: {response.status}"
-            return True, await response.text()
+            paste_url = await response.text()
+            paste_id = paste_url.split('/')[-1]
+            return True, f"https://pastebin.com/raw/{paste_id}"
 
 async def handle_upload_command(bot, message):
-    args = message.command[1:]
+    # Prompt user for the title
+    title_msg = await message.reply("Please enter a title for the paste.")
 
-    title = None
-    visibility = None
-    expiration = None
-    format = None
-    content = None
+    # Wait for the user's response
+    title_response = await app.ask(message.chat.id, "Enter a title:", filters=filters.text)
 
-    # Parse command arguments
-    for arg in args:
-        if arg.startswith("title="):
-            title = arg.split("=", 1)[1]
-        elif arg.startswith("visibility="):
-            visibility = arg.split("=", 1)[1]
-        elif arg.startswith("expiration="):
-            expiration = arg.split("=", 1)[1]
-        elif arg.startswith("format="):
-            format = arg.split("=", 1)[1]
-        else:
-            content = arg
+    # Extract title from user's response
+    title = title_response.text
+
+    # Check for content
+    if not title:
+        await title_msg.edit("Title cannot be empty.")
+        return
+
+    # Prompt user for content
+    content_msg = await message.reply("Please enter the text content to upload.")
+
+    # Wait for the user's response
+    content_response = await app.ask(message.chat.id, "Enter the text content:", filters=filters.text)
+
+    # Extract content from user's response
+    content = content_response.text
 
     # Check for content
     if not content:
-        replied = message.reply_to_message
-        if not replied or not replied.text:
-            return await message.reply("Please provide text to upload, or specify a title and content.")
-        content = replied.text
+        await content_msg.edit("Content cannot be empty.")
+        return
 
-    upload_msg = await message.reply("Processing...")
+    # Upload to Pastebin
+    await title_msg.edit("Posting...")
+    success, result = await upload_to_pastebin(content, title)
 
-    success, result = await upload_to_pastebin(content, title, visibility, expiration, format)
     if not success:
-        return await upload_msg.edit(f"Upload failed: {result}")
-    
+        await title_msg.edit(f"Upload failed: {result}")
+        return
+
+    await title_msg.edit("Getting raw link...")
     await message.reply_text(f"Here is your raw link: {result}")
-    await upload_msg.delete()
 
 @app.on_message(filters.command("pastebin"))
 async def upload_pastebin(bot, message):
