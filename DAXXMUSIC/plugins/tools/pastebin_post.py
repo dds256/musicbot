@@ -1,4 +1,6 @@
 import aiohttp
+import random
+import string
 from aiohttp import ContentTypeError
 from pyrogram import filters
 from DAXXMUSIC import app as app
@@ -33,6 +35,7 @@ async def handle_upload_command(bot, message):
     args = message.command[1:]
 
     content = None
+    title = ''.join(random.choices(string.ascii_letters + string.digits, k=8))  # Generate a random title
 
     # Check if the command has arguments
     if not args:
@@ -45,13 +48,29 @@ async def handle_upload_command(bot, message):
     else:
         content = ' '.join(args)
 
+    # Check if the content is a valid JSON
+    try:
+        data = json.loads(content)
+        if isinstance(data, dict):
+            title = data.get("title", title)
+            description = data.get("description", "")
+            download_link = data.get("download", "")
+            content = f"Title: {title}\nDescription: {description}\nDownload: {download_link}"
+    except json.JSONDecodeError:
+        # If not JSON, proceed with the content as is
+        pass
+
     upload_msg = await message.reply("Processing...")
 
-    success, result = await upload_to_pastebin(content)
+    success, result = await upload_to_pastebin(content, title)
     if not success:
         return await upload_msg.edit(f"Upload failed: {result}")
 
-    await message.reply_text(f"Here is your raw link: {result}")
+    # Add '/raw/' to the URL for the raw link
+    paste_key = result.split('/')[-1]
+    raw_link = f"https://pastebin.com/raw/{paste_key}"
+
+    await message.reply_text(f"Here is your raw link: {raw_link}")
     await upload_msg.delete()
 
 @app.on_message(filters.command("pastebin"))
