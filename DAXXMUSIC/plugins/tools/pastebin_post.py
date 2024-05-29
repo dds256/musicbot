@@ -2,8 +2,7 @@ import aiohttp
 from aiohttp import ContentTypeError
 from pyrogram import filters
 from DAXXMUSIC import app as app
-import random
-import string
+import json
 
 # PasteBin API details
 PASTEBIN_API_KEY = 'e-zy2euWaViTYmi61-KVxPh_KVVvacUP'
@@ -33,39 +32,25 @@ async def upload_to_pastebin(content, title=None, visibility=None, expiration=No
 async def handle_upload_command(bot, message):
     args = message.command[1:]
 
-    # Set default values
-    title = ''.join(random.choices(string.ascii_letters + string.digits, k=8))  # Generate a random title
-    visibility = "1"  # Public visibility
-    expiration = None  # No expiry
-    format = None
     content = None
 
-    # Parse command arguments
-    for arg in args:
-        if arg.startswith("title="):
-            title = arg.split("=", 1)[1]
-        elif arg.startswith("visibility="):
-            visibility = arg.split("=", 1)[1]
-        elif arg.startswith("expiration="):
-            expiration = arg.split("=", 1)[1]
-        elif arg.startswith("format="):
-            format = arg.split("=", 1)[1]
-        else:
-            content = arg
-
-    # Check for content
-    if not content:
+    # Check if the command has arguments
+    if not args:
+        # Check if there's a reply
         replied = message.reply_to_message
-        if not replied or not replied.text:
-            return await message.reply("Please provide text to upload, or specify a title and content.")
-        content = replied.text
+        if replied and replied.text:
+            content = replied.text
+        else:
+            content = message.text
+    else:
+        content = ' '.join(args)
 
     upload_msg = await message.reply("Processing...")
 
-    success, result = await upload_to_pastebin(content, title, visibility, expiration, format)
+    success, result = await upload_to_pastebin(content)
     if not success:
         return await upload_msg.edit(f"Upload failed: {result}")
-    
+
     await message.reply_text(f"Here is your raw link: {result}")
     await upload_msg.delete()
 
