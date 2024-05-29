@@ -8,7 +8,7 @@ from DAXXMUSIC import app
 
 
 api = ApiClient()
-Models = api.getModelss()['models']['image']
+Models = api.getModels()['models']['image']
 
 Database = {}
 
@@ -131,12 +131,12 @@ def paginate_models(page_n: int, models: list,user_id) -> list:
 
 
 
-@app.on_message(filters.command(["draw","create","imagine","dream"]))
+@app.on_message(filters.command(["genimg","create","imagine","dream"]))
 async def draw(_: app, m: t.Message):
     global Database
     prompt = getText(m)
     if prompt is None:
-        return await m.reply_text("<code>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴘʀᴏᴍᴘᴛ. ᴜsᴀɢᴇ: /draw <prompt></code>")
+        return await m.reply_text("<code>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴘʀᴏᴍᴘᴛ. ᴜsᴀɢᴇ: /genimg <prompt></code>")
     user = m.from_user
     data = {'prompt':prompt,'reply_to_id':m.id}
     Database[user.id] = data
