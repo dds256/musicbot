@@ -33,17 +33,28 @@ async def smali_to_regex_command(bot, message):
 
 def convert_smali_to_regex(smali_code):
     try:
-        # Escape special regex characters
-        regex_pattern = re.escape(smali_code)
-
-        # Additional replacements for specific characters
-        regex_pattern = regex_pattern.replace("{", "\\{").replace("}", "\\}")
-        regex_pattern = regex_pattern.replace("(", "\\(").replace(")", "\\)")
-        regex_pattern = regex_pattern.replace("[", "\\[").replace("]", "\\]")
-        regex_pattern = regex_pattern.replace("+", "\\+")
-        regex_pattern = regex_pattern.replace(";", "\\;")
-
-        return regex_pattern
+        # Modify the input Smali code to regex pattern
+        modified_code = modify_string(smali_code)
+        return modified_code
     except Exception as e:
         print(f"Error converting Smali code to regex: {e}")
         return None
+
+def modify_string(in_text):
+    modified_text = in_text
+    modified_text = modified_text.replace(".", "\\.")
+    modified_text = re.sub(r"/.*;->", "/*.*;->", modified_text)
+    modified_text = re.sub(r"\{.*\}", "{.*}", modified_text)
+    modified_text = re.sub(r"(v\d+)|(p\d+)", ".*", modified_text)
+    modified_text = re.sub(r"\s+", "", modified_text)
+    modified_text = re.sub(r"(\n)+(\n)", "\\\\s*", modified_text)
+    modified_text = re.sub(r"invoke[-]\w*", "invoke-*.*", modified_text)
+    modified_text = re.sub(r"\n", "\\\\s*", modified_text)
+    modified_text = modified_text.replace("}", "\\}")
+    modified_text = modified_text.replace("{", "\\{")
+    modified_text = modified_text.replace("(", "\\(")
+    modified_text = modified_text.replace(")", "\\)")
+    modified_text = modified_text.replace("$", "\\$")
+    modified_text = modified_text.replace("[", "\\[")
+    modified_text = modified_text.replace("]", "\\]")
+    return modified_text
