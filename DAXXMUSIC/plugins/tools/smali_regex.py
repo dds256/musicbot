@@ -27,15 +27,15 @@ async def smali_to_regex_command(bot, message):
 
     # Send the generated regex pattern or error message
     if regex_pattern:
-        await message.reply(f"Generated Regex Pattern:\n`{modified_text}`", parse_mode="markdown")
+        await message.reply(f"Generated Regex Pattern:\n`{regex_pattern}`", parse_mode="markdown")
     else:
         await message.reply("Failed to generate regex pattern. Please check your input and try again.")
 
 def convert_smali_to_regex(smali_code):
     try:
         # Modify the input Smali code to regex pattern
-        modified_code = modify_string(smali_code)
-        return modified_code
+        modified_text = modify_string(smali_code)
+        return modified_text
     except Exception as e:
         print(f"Error converting Smali code to regex: {e}")
         return None
