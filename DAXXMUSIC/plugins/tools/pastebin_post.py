@@ -44,7 +44,7 @@ async def handle_upload_command(bot, message):
         if replied and replied.text:
             content = replied.text
         else:
-            content = message.text
+            return await message.reply("Please provide text to upload, either as an argument or by replying to a message with text.")
     else:
         content = ' '.join(args)
 
@@ -59,6 +59,9 @@ async def handle_upload_command(bot, message):
     except json.JSONDecodeError:
         # If not JSON, proceed with the content as is
         pass
+
+    if not content:
+        return await message.reply("No content provided to post. example: /pastebin this is a paste")
 
     upload_msg = await message.reply("Processing...")
 
