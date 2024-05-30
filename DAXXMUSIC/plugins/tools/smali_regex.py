@@ -27,7 +27,7 @@ async def smali_to_regex_command(bot, message):
 
     # Send the generated regex pattern or error message
     if regex_pattern:
-        await message.reply(f"Generated Regex Pattern:\n`{regex_pattern}`", parse_mode="markdown")
+        await message.reply(f"Generated Regex Pattern:\n`{modified_text}`", parse_mode="markdown")
     else:
         await message.reply("Failed to generate regex pattern. Please check your input and try again.")
 
