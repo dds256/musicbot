@@ -2,15 +2,15 @@ import re
 from pyrogram import filters
 from DAXXMUSIC import app as app
 
-@app.on_message(filters.command("smalitoregex"))
+@app.on_message(filters.command("smali2regex"))
 async def smali_to_regex_command(bot, message):
     if len(message.command) < 2:
-        await message.reply("Usage: /smalitoregex <smali_code>")
+        await message.reply("Usage: /smali2regex <smali_code>")
         return
 
     smali_code = " ".join(message.command[1:])
     if not smali_code and not message.reply_to_message:
-        await message.reply("Please provide Smali code or reply to a message containing Smali code.")
+        await message.reply("Please provide Smali code or reply to a message containing Smali code. example: /smali2regex your code here..")
         return
 
     if not smali_code:
