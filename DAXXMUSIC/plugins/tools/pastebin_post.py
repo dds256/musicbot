@@ -44,7 +44,7 @@ async def handle_upload_command(bot, message):
         if replied and replied.text:
             content = replied.text
         else:
-            return await message.reply("Please provide text to upload, either as an argument or by replying to a message with text.")
+            return await message.reply("Please provide text to post, for example /pastebin your paste | or by replying to a message with text.")
     else:
         content = ' '.join(args)
 
