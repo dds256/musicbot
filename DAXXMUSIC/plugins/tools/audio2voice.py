@@ -1,4 +1,6 @@
 import os
+import shutil
+from pydub import AudioSegment
 from pyrogram import filters
 from DAXXMUSIC import app
 from config import OWNER_ID
@@ -14,16 +16,27 @@ async def send_processing_message(chat_id):
 # Function to send voice message
 async def send_voice_message(message, audio_file_path, processing_message):
     try:
-        # Open the audio file
-        with open(audio_file_path, 'rb') as audio_file:
-            # Send voice message with the audio file
-            await app.send_voice(message.chat.id, audio_file, caption="Voice Message")
+        # Rename the audio file with the appropriate extension
+        voice_file_path = audio_file_path + ".ogg"
+        shutil.move(audio_file_path, voice_file_path)
+        
+        # Embed metadata to ensure waveform display
+        audio = AudioSegment.from_file(voice_file_path, format="ogg")
+        audio.export(voice_file_path, format="ogg", tags={'artist': 'Your Bot', 'title': 'Voice Message'})
+
+        # Send voice message with the audio file
+        await app.send_voice(
+            chat_id=message.chat.id,
+            voice=voice_file_path,
+            caption="Voice Message",
+            file_name="voice_message.ogg"  # Specify the file name for display in Telegram
+        )
 
         # Delete processing message
         await processing_message.delete()
 
         # Delete downloaded audio file
-        os.remove(audio_file_path)
+        os.remove(voice_file_path)
     except Exception as e:
         print("Failed to send voice message:", e)
 
