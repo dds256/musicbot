@@ -1,5 +1,4 @@
 import base64
-import hashlib
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from pyrogram import filters
@@ -34,7 +33,6 @@ async def encrypt_aes_command(bot, message):
     
     plaintext, key = args
     try:
-        key = hashlib.sha256(key.encode()).digest()[:16]  # Ensure the key is 16 bytes long
         ciphertext = encrypt_aes_ecb(plaintext, key)
         await message.reply(f"Encryption Result: {ciphertext}")
     except Exception as e:
@@ -50,7 +48,6 @@ async def decrypt_aes_command(bot, message):
     
     ciphertext, key = args
     try:
-        key = hashlib.sha256(key.encode()).digest()[:16]  # Ensure the key is 16 bytes long
         plaintext = decrypt_aes_ecb(ciphertext, key)
         await message.reply(f"Decryption Result: {plaintext}")
     except Exception as e:
