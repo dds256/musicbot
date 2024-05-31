@@ -38,7 +38,8 @@ async def predict_command(bot, message):
         await message.reply("Usage: /predict <name>")
         return
 
-    name = args[0]
+    # Join all arguments to form the full name
+    name = " ".join(args)
     processing_message = await message.reply("Processing predictions...")
 
     try:
