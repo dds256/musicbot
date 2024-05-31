@@ -73,7 +73,7 @@ async def handle_upload_command(bot, message):
     paste_key = result.split('/')[-1]
     raw_link = f"https://pastebin.com/raw/{paste_key}"
 
-    await message.reply_text(f"Here is your raw link: {raw_link}")
+    await message.reply_text(f"Original Link: {raw_link}\n\n[Copy Link]({raw_link})", disable_web_page_preview=True)
     await upload_msg.delete()
 
 @app.on_message(filters.command("pastebin"))
