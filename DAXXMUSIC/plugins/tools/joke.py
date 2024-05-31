@@ -52,13 +52,13 @@ async def joke_command(bot, message):
         await message.delete()
         
         # Store the joke message ID and user ID
-        joke_message_ids[joke_message.message_id] = user.id
+        joke_message_ids[joke_message.id] = user.id
     except Exception as e:
         await processing_message.edit(f"An error occurred: {str(e)}")
 
 @app.on_message(filters.reply)
 async def handle_reply(bot, message: Message):
-    reply_to_message_id = message.reply_to_message.message_id
+    reply_to_message_id = message.reply_to_message.id
     
     if reply_to_message_id in joke_message_ids:
         user_id = joke_message_ids[reply_to_message_id]
