@@ -3,11 +3,18 @@ from pyrogram import filters
 from DAXXMUSIC import app
 from config import OWNER_ID
 
+# Function to send processing message
+async def send_processing_message(chat_id):
+    try:
+        await app.send_message(chat_id, "Processing audio, please wait...")
+    except Exception as e:
+        print("Failed to send processing message:", e)
+
 # Function to send voice message
 async def send_voice_message(message, audio_file_path):
     try:
         # Send processing message
-        await message.reply_chat_action("record_audio")
+        await send_processing_message(message.chat.id)
         
         # Send voice message
         await app.send_voice(message.chat.id, audio_file_path)
@@ -24,14 +31,8 @@ async def handle_audio_message(message):
         audio_file_id = message.reply_to_message.audio.file_id
         audio_file_path = await app.download_media(audio_file_id)
         if audio_file_path:
-            # Send processing message
-            processing_message = await message.reply_text("Processing audio...")
-            
             # Send voice message
             await send_voice_message(message, audio_file_path)
-            
-            # Delete processing message
-            await processing_message.delete()
         else:
             await message.reply_text("Failed to download audio file")
     except Exception as e:
