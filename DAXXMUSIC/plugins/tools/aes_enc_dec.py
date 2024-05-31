@@ -27,13 +27,13 @@ def decrypt_aes_ecb(ciphertext, key=None):
 @app.on_message(filters.command("aes_enc"))
 async def encrypt_aes_command(bot, message):
     args = message.command[1:]
-    if len(args) != 2:
-        await message.reply("Usage: /aes_enc <plaintext> [AES_key]")
+    if len(args) != 1:
+        await message.reply("Usage: /aes_enc <plaintext>")
         return
     
-    plaintext, key = args
+    plaintext = args[0]
     try:
-        ciphertext = encrypt_aes_ecb(plaintext, key)
+        ciphertext = encrypt_aes_ecb(plaintext)
         await message.reply(f"Encryption Result: {ciphertext}")
     except Exception as e:
         await message.reply(f"Encryption failed: {str(e)}")
@@ -42,13 +42,13 @@ async def encrypt_aes_command(bot, message):
 @app.on_message(filters.command("aes_dec"))
 async def decrypt_aes_command(bot, message):
     args = message.command[1:]
-    if len(args) != 2:
-        await message.reply("Usage: /aes_dec <base64_encoded_ciphertext> [AES_key]")
+    if len(args) != 1:
+        await message.reply("Usage: /aes_dec <base64_encoded_ciphertext>")
         return
     
-    ciphertext, key = args
+    ciphertext = args[0]
     try:
-        plaintext = decrypt_aes_ecb(ciphertext, key)
+        plaintext = decrypt_aes_ecb(ciphertext)
         await message.reply(f"Decryption Result: {plaintext}")
     except Exception as e:
         await message.reply(f"Decryption failed: {str(e)}")
