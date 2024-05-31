@@ -59,7 +59,7 @@ async def predict_command(bot, message):
         else:
             nationality = "Unknown"
 
-        prediction_result = (f"Predictions for the name **{name}**:>\n"
+        prediction_result = (f"Predictions for the name **{name}**!\n"
                              f"**Age:** {age}\n"
                              f"**Gender:** {gender}\n"
                              f"**Nationality:** {nationality}\n\n"f"By **Muthal Baba**")
