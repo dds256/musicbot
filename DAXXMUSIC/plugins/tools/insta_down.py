@@ -17,6 +17,7 @@ async def download_instagram_video(link):
             if response.status == 200:
                 try:
                     data = await response.json()
+                    print(f"Response JSON: {data}")  # Debugging line
                     if 'data' in data and 'url' in data['data'][0]:
                         video_url = data['data'][0]['url']
                         return video_url
@@ -45,4 +46,3 @@ async def instadownload_command(bot, message):
             await processing_message.edit(f"Failed to send Instagram video: {str(send_error)}")
     except Exception as e:
         await processing_message.edit(f"An error occurred: {str(e)}")
-        
