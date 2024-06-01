@@ -16,22 +16,33 @@ async def download_instagram_video(link):
                 return download_link['href']
     return None
 
-@app.on_message(filters.command("instadownload"))
+@app.on_message(filters.command("instadownload") | filters.regex(r'^https?:\/\/(?:www\.)?instagram\.com\/p\/[\w\-]+\/?$'))
 async def instadownload_command(bot, message):
     user = message.from_user
-    processing_message = await message.reply("Processing your Instagram video link...")
+    link = None
+    if message.reply_to_message:
+        replied_message = message.reply_to_message
+        if replied_message.text:
+            link = replied_message.text.strip()
+    if not link:
+        try:
+            link = message.text.split(" ")[1]
+        except IndexError:
+            await message.reply("Please provide a valid Instagram video link.")
+            return
+
+    processing_message = await message.reply(f"Downloading Instagram video from {user.mention}...\n\nLink: {link}")
     
     try:
-        link = message.text.split(" ")[1]
         video_url = await download_instagram_video(link)
         if not video_url:
             await processing_message.edit("Failed to download Instagram video. Please ensure the link is valid.")
             return
         
         try:
-            await bot.send_video(message.chat.id, video_url, caption="Here's your Instagram video.")
+            await bot.send_video(message.chat.id, video_url, caption=f"Here's your Instagram video from {user.mention}: {link}")
+            await processing_message.edit("Instagram video sent successfully!")
         except Exception as send_error:
             await processing_message.edit(f"Failed to send Instagram video: {str(send_error)}")
-        await processing_message.delete()
     except Exception as e:
         await processing_message.edit(f"An error occurred: {str(e)}")
