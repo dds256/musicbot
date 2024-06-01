@@ -3,17 +3,17 @@ from pyrogram import filters
 from DAXXMUSIC import app
 from bs4 import BeautifulSoup
 
-# Function to download Facebook video using fbdown.net
+# Function to download Facebook video using Getfvid
 async def download_facebook_video(link):
-    response = requests.get(f"https://fbdown.net/download.php?URL={link}")
+    response = requests.get(f"https://www.getfvid.com/downloader?url={link}")
     if response.ok:
         soup = BeautifulSoup(response.text, 'html.parser')
-        video_element = soup.find('a', {'class': 'btn btn-download'})
+        video_element = soup.find('a', {'class': 'btn-download'})
         if video_element and 'href' in video_element.attrs:
             return video_element['href']
     return None
 
-@app.on_message(filters.command("fbdownload") | filters.regex(r'^https?:\/\/(?:www\.)?facebook\.com\/.+\/videos\/.+\/?$'))
+@app.on_message(filters.command("fbdownload") | filters.regex(r'^https?:\/\/(?:www\.)?facebook\.com\/(?:[^\/]+\/)?(?:reel|watch|videos)\/[^\s]+'))
 async def fbdownload_command(bot, message):
     try:
         link = None
@@ -40,7 +40,7 @@ async def fbdownload_command(bot, message):
             return
         
         # Mention the user who requested the video in the caption
-        caption = f"{message.from_user.mention}, Here's your Facebook video."
+        caption = f"{message.from_user.mention}, here's your Facebook video."
         
         # Send the video with the caption
         await bot.send_video(message.chat.id, video_url, caption=caption)
