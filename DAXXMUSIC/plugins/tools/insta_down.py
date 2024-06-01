@@ -1,36 +1,17 @@
 import aiohttp
 from pyrogram import filters
 from DAXXMUSIC import app as app
-import os
+import requests
+import io
 
-# Function to download Instagram video using RapidAPI
+# Function to download Instagram video using SaveIG
 async def download_instagram_video(link):
-    url = "https://instagram-video-or-images-downloader.p.rapidapi.com/dl"
-    headers = {
-        'x-rapidapi-key': '77dd9d1e3bms8',
-        'x-rapidapi-host': 'instagram-video-or-images-downloader.p.rapidapi.com'
-    }
-    params = {
-        'url': link
-    }
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, headers=headers, params=params) as response:
-            if response.status == 200:
-                data = await response.json()
-                video_url = data.get("data").get("video_url")
-                return video_url
-            return None
-
-# Function to download video and send as response
-async def send_video_response(chat_id, video_url):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(video_url) as response:
-            if response.status == 200:
-                filename = "instagram_video.mp4"
-                with open(filename, "wb") as f:
-                    f.write(await response.read())
-                await app.send_video(chat_id, video=filename, caption="Here's your Instagram video.")
-                os.remove(filename)
+    response = requests.post("https://saveig.app/api/ajaxSearch", data={"q": link, "t": "media", "lang": "en"})
+    if response.ok:
+        data = response.json()
+        video_url = data.get("data")
+        return video_url
+    return None
 
 @app.on_message(filters.command("instadownload"))
 async def instadownload_command(bot, message):
@@ -44,8 +25,15 @@ async def instadownload_command(bot, message):
             await processing_message.edit("Failed to download Instagram video. Please ensure the link is valid.")
             return
         
-        await send_video_response(message.chat.id, video_url)
-        await processing_message.delete()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(video_url) as resp:
+                if resp.status == 200:
+                    video_data = await resp.read()
+                    bio = io.BytesIO(video_data)
+                    await bot.send_video(message.chat.id, bio, caption="Here's your Instagram video.")
+                    await processing_message.delete()
+                else:
+                    await processing_message.edit("Failed to download Instagram video.")
     except Exception as e:
         await processing_message.edit(f"An error occurred: {str(e)}")
         
