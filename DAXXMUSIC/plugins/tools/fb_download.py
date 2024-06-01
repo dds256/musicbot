@@ -3,14 +3,14 @@ from pyrogram import filters
 from DAXXMUSIC import app
 from bs4 import BeautifulSoup
 
-# Function to download Facebook video
+# Function to download Facebook video using fbdown.net
 async def download_facebook_video(link):
-    response = requests.get(link)
+    response = requests.get(f"https://fbdown.net/download.php?URL={link}")
     if response.ok:
         soup = BeautifulSoup(response.text, 'html.parser')
-        video_element = soup.find("meta", property="og:video")
-        if video_element:
-            return video_element["content"]
+        video_element = soup.find('a', {'class': 'btn btn-download'})
+        if video_element and 'href' in video_element.attrs:
+            return video_element['href']
     return None
 
 @app.on_message(filters.command("fbdownload") | filters.regex(r'^https?:\/\/(?:www\.)?facebook\.com\/.+\/videos\/.+\/?$'))
@@ -51,3 +51,4 @@ async def fbdownload_command(bot, message):
         await message.reply("Please provide a valid Facebook video link.")
     except Exception as e:
         await message.reply(f"An error occurred: {str(e)}")
+        
