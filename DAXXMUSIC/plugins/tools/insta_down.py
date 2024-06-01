@@ -1,17 +1,25 @@
 import aiohttp
 from pyrogram import filters
 from DAXXMUSIC import app as app
-import requests
 import os
 
-# Function to download Instagram video using SaveIG
+# Function to download Instagram video using RapidAPI
 async def download_instagram_video(link):
-    response = requests.post("https://saveig.app/api/ajaxSearch", data={"q": link, "t": "media", "lang": "en"})
-    if response.ok:
-        data = response.json()
-        video_url = data.get("data")
-        return video_url
-    return None
+    url = "https://instagram-video-or-images-downloader.p.rapidapi.com/dl"
+    headers = {
+        'x-rapidapi-key': '77dd9d1e3bms8',
+        'x-rapidapi-host': 'instagram-video-or-images-downloader.p.rapidapi.com'
+    }
+    params = {
+        'url': link
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, headers=headers, params=params) as response:
+            if response.status == 200:
+                data = await response.json()
+                video_url = data.get("data").get("video_url")
+                return video_url
+            return None
 
 # Function to download video and send as response
 async def send_video_response(chat_id, video_url):
