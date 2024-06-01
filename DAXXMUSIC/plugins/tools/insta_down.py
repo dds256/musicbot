@@ -1,19 +1,20 @@
 import aiohttp
 from pyrogram import filters
 from DAXXMUSIC import app as app
-import requests
 import os
 from bs4 import BeautifulSoup
 
-# Function to download Instagram video using SaveIG
-async def download_instagram_video(link):
-    response = requests.post("https://saveig.app/api/ajaxSearch", data={"q": link, "t": "media", "lang": "en"})
-    if response.ok:
-        soup = BeautifulSoup(response.text, 'html.parser')
-        video_tag = soup.find('video')
-        if video_tag:
-            video_url = video_tag['src']
-            return video_url
+# Function to extract Instagram video URL from HTML
+async def extract_instagram_video_url(link):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(link) as response:
+            if response.status == 200:
+                html_content = await response.text()
+                soup = BeautifulSoup(html_content, 'html.parser')
+                video_tag = soup.find('meta', property='og:video')
+                if video_tag:
+                    video_url = video_tag['content']
+                    return video_url
     return None
 
 @app.on_message(filters.command("instadownload"))
@@ -23,16 +24,17 @@ async def instadownload_command(bot, message):
     
     try:
         link = message.text.split(" ")[1]
-        video_url = await download_instagram_video(link)
+        video_url = await extract_instagram_video_url(link)
         if not video_url:
-            await processing_message.edit("Failed to download Instagram video. Please ensure the link is valid.")
+            await processing_message.edit("Failed to extract Instagram video URL. Please ensure the link is valid.")
             return
+        
+        file_name = "instagram_video.mp4"  # You can modify the file name as needed
+        file_path = os.path.join("downloads", file_name)
         
         async with aiohttp.ClientSession() as session:
             async with session.get(video_url) as resp:
                 if resp.status == 200:
-                    file_name = "instagram_video.mp4"  # You can modify the file name as needed
-                    file_path = os.path.join("downloads", file_name)
                     with open(file_path, 'wb') as f:
                         f.write(await resp.read())
                     
@@ -42,4 +44,3 @@ async def instadownload_command(bot, message):
                     await processing_message.edit("Failed to download Instagram video.")
     except Exception as e:
         await processing_message.edit(f"An error occurred: {str(e)}")
-        
