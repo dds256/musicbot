@@ -1,4 +1,3 @@
-import json
 import requests
 import random
 from pyrogram import filters
@@ -27,8 +26,8 @@ def generate_image_from_prompt(user_prompt):
         "x-api-key": segmind_api_key,
         "Content-Type": "application/json"
     }
-    response = requests.post(api_url, headers=headers, data=json.dumps(payload))
-    return response.json(), response.headers
+    response = requests.post(api_url, headers=headers, json=payload)
+    return response.json()
 
 # Command to generate an image from a text prompt
 @app.on_message(filters.command(["aiimg"]))
@@ -42,21 +41,10 @@ async def generate_image_command(bot, message):
     process_message = await message.reply("Generating image...")
 
     try:
-        response_data, response_headers = generate_image_from_prompt(user_prompt)
-        image_url = response_data['image_url']  # Adjust based on actual API response structure
+        image_data = generate_image_from_prompt(user_prompt)
+        image_url = image_data['image_url']  # Adjust based on actual API response structure
 
-        model_info = response_headers.get('X-Model')
-        caption = (
-            f"Model: {model_info}\n"
-            f"LoRa's: {response_headers.get('X-LoRas')}\n"
-            f"Size: {response_data['img_width']}x{response_data['img_height']}\n"
-            f"Steps: {response_data['num_inference_steps']}\n"
-            f"Sampler: {response_data['scheduler']}\n"
-            f"CFG: {response_data['guidance_scale']}\n"
-            f"Seed: {response_data['seed']}"
-        )
-        await bot.send_photo(message.chat.id, image_url, caption=caption, reply_to_message_id=message.message_id)
+        await bot.send_photo(message.chat.id, image_url, reply_to_message_id=message.message_id)
         await process_message.delete()
     except Exception as e:
-        error_message = f"An error occurred: {str(e)}"
-        await process_message.edit_text(error_message)
+        await process_message.edit_text(f"An error occurred: {str(e)}")
