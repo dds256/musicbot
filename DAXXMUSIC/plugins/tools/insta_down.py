@@ -1,7 +1,10 @@
 import requests
 from DAXXMUSIC import app
 from pyrogram import filters
-from utils import bs4, wget, asyncio, re, requests
+import asyncio
+import re
+from bs4 import BeautifulSoup
+import wget
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0",
@@ -80,7 +83,7 @@ async def download_story(client, event, link):
 
 async def get_meta_tag(link):
     getdata = requests.get(link).text
-    soup = bs4.BeautifulSoup(getdata, 'html.parser')
+    soup = BeautifulSoup(getdata, 'html.parser')
     return soup.find('meta', attrs={'property': 'og:video'})
 
 async def search_saveig(link):
@@ -102,3 +105,4 @@ async def send_file(client, event, content_value):
 @app.on_message(filters.command("instadownload"))
 async def handle_insta_download(client, message):
     await download(client, message)
+    
