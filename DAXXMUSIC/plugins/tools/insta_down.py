@@ -2,15 +2,18 @@ import aiohttp
 from pyrogram import filters
 from DAXXMUSIC import app as app
 import requests
-import io
+import os
+from bs4 import BeautifulSoup
 
 # Function to download Instagram video using SaveIG
 async def download_instagram_video(link):
     response = requests.post("https://saveig.app/api/ajaxSearch", data={"q": link, "t": "media", "lang": "en"})
     if response.ok:
-        data = response.json()
-        video_url = data.get("data")
-        return video_url
+        soup = BeautifulSoup(response.text, 'html.parser')
+        video_tag = soup.find('video')
+        if video_tag:
+            video_url = video_tag['src']
+            return video_url
     return None
 
 @app.on_message(filters.command("instadownload"))
@@ -28,9 +31,12 @@ async def instadownload_command(bot, message):
         async with aiohttp.ClientSession() as session:
             async with session.get(video_url) as resp:
                 if resp.status == 200:
-                    video_data = await resp.read()
-                    bio = io.BytesIO(video_data)
-                    await bot.send_video(message.chat.id, bio, caption="Here's your Instagram video.")
+                    file_name = "instagram_video.mp4"  # You can modify the file name as needed
+                    file_path = os.path.join("downloads", file_name)
+                    with open(file_path, 'wb') as f:
+                        f.write(await resp.read())
+                    
+                    await bot.send_video(message.chat.id, file_path, caption="Here's your Instagram video.")
                     await processing_message.delete()
                 else:
                     await processing_message.edit("Failed to download Instagram video.")
