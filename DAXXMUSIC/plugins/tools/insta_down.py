@@ -31,7 +31,7 @@ async def instadownload_command(bot, message):
             await message.reply("Please provide a valid Instagram video link.")
             return
 
-    processing_message = await message.reply(f"Downloading Instagram video from...\n\nLink: {link}")
+    processing_message = await message.reply(f"Downloading Instagram video from..\n\nLink: {link}")
     
     try:
         video_url = await download_instagram_video(link)
@@ -40,10 +40,9 @@ async def instadownload_command(bot, message):
             return
         
         try:
-            sent_message = await bot.send_video(message.chat.id, video_url, caption=f"{user.mention}, Here's your Instagram video.\n Downloaded from: {link}")
+            sent_message = await bot.send_video(message.chat.id, video_url, caption=f"{user.mention} Here's your Instagram video.\nDownloaded from: ```{link}```")
             await bot.delete_messages(message.chat.id, message.message_id)
             await processing_message.delete()
-            await sent_message.edit_caption(f"Here's your Instagram video from {user.mention}: {link}")
         except Exception as send_error:
             await processing_message.edit(f"Failed to send Instagram video: {str(send_error)}")
     except Exception as e:
