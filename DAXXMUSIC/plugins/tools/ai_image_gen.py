@@ -31,7 +31,7 @@ def generate_image_from_prompt(user_prompt):
     return response.json(), response.headers
 
 # Command to generate an image from a text prompt
-@app.on_message(filters.command(["gen"]))
+@app.on_message(filters.command(["aiimg"]))
 async def generate_image_command(bot, message):
     args = message.command[1:]
     if not args:
