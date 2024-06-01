@@ -24,8 +24,7 @@ async def instadownload_command(bot, message):
         # Check if the message is a reply and contains a link
         if message.reply_to_message and message.reply_to_message.text:
             link = message.reply_to_message.text.strip()
-            # Delete the command and progress message
-            await message.reply_to_message.delete()
+            # Delete only the command message
             await message.delete()
             processing_message = await message.reply("Processing your Instagram link...")
         else:
@@ -55,3 +54,4 @@ async def instadownload_command(bot, message):
         await message.reply("Please provide a valid Instagram video link.")
     except Exception as e:
         await message.reply(f"An error occurred: {str(e)}")
+        
