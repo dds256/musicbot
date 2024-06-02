@@ -1,39 +1,25 @@
-import subprocess
-import os
+import requests
 from pyrogram import filters
 from DAXXMUSIC import app
 
-# Function to download Facebook video using yt-dlp
+# Function to download Facebook video using saveas.co API
 async def download_facebook_video(link):
     try:
-        output_path = "/tmp"
-        output_template = os.path.join(output_path, '%(title)s.%(ext)s')
-        ydl_opts = {
-            'format': 'best',
-            'outtmpl': output_template,
-            'quiet': True
-        }
+        api_url = "https://saveas.co/api/facebook"
+        response = requests.post(api_url, data={"url": link})
         
-        # Run yt-dlp to download the video
-        process = subprocess.run(
-            ['yt-dlp', '-f', 'best', '-o', output_template, link],
-            capture_output=True,
-            text=True
-        )
-
-        if process.returncode != 0:
-            return None
-
-        # Get the downloaded video file path
-        for file in os.listdir(output_path):
-            if file.endswith(".mp4"):
-                return os.path.join(output_path, file)
+        if response.ok:
+            data = response.json()
+            if data['success']:
+                video_url = data['url']
+                return video_url
+        return None
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return None
 
 # Improved regex to match various Facebook video URLs
-FACEBOOK_VIDEO_REGEX = r'^(https?:\/\/)?(www\.)?(facebook\.com\/(?:[^\/]+\/)?(?:reel|watch|video|videos|story\.php\?story_fbid=))[^\s]+'
+FACEBOOK_VIDEO_REGEX = r'(https?:\/\/(?:www\.)?facebook\.com\/(?:reel|watch|video|videos|story\.php\?story_fbid=|[^\/]+\/videos\/)[^\s]+)'
 
 @app.on_message(filters.command("fbdownload") | filters.regex(FACEBOOK_VIDEO_REGEX))
 async def fbdownload_command(bot, message):
@@ -55,9 +41,9 @@ async def fbdownload_command(bot, message):
             processing_message = await message.reply("Processing your Facebook video link...")
         
         # Download the Facebook video
-        video_path = await download_facebook_video(link)
+        video_url = await download_facebook_video(link)
         
-        if not video_path:
+        if not video_url:
             await processing_message.edit("Failed to download Facebook video. Please ensure the link is valid.")
             return
         
@@ -65,13 +51,10 @@ async def fbdownload_command(bot, message):
         caption = f"{message.from_user.mention}, here's your Facebook video."
         
         # Send the video with the caption
-        await bot.send_video(message.chat.id, video_path, caption=caption)
+        await bot.send_video(message.chat.id, video_url, caption=caption)
         
         # Delete the progress message after sending the video
         await processing_message.delete()
-        
-        # Clean up the downloaded video file
-        os.remove(video_path)
     except IndexError:
         await message.reply("Please provide a valid Facebook video link.")
     except Exception as e:
