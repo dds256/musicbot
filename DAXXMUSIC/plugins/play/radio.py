@@ -25,8 +25,6 @@ from DAXXMUSIC.utils.logger import play_logs
 from DAXXMUSIC.utils.stream.stream import stream
 
 
-RADIO_URL = getenv("RADIO_URL", "http://peridot.streamguys.com:7150/Mirchi")
-
 RADIO_STATION = {
     "air bilaspur": "http://air.pc.cdn.bitgravity.com/air/live/pbaudio110/playlist.m3u8",
     "air raipur": "http://air.pc.cdn.bitgravity.com/air/live/pbaudio118/playlist.m3u8",
