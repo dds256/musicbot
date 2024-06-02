@@ -12,17 +12,17 @@ from pyrogram.types import Message
 
 from config import BANNED_USERS, adminlist
 from strings import get_string
-from DAXXXMUCIS import app
-from DAXXXMUCIS.misc import SUDOERS
-from DAXXXMUCIS.utils.database import (
+from DAXXMUSIC import app
+from DAXXMUSIC.misc import SUDOERS
+from DAXXMUSIC.utils.database import (
     get_assistant,
     get_cmode,
     get_lang,
     get_playmode,
     get_playtype,
 )
-from DAXXXMUCIS.utils.logger import play_logs
-from DAXXXMUCIS.utils.stream.stream import stream
+from DAXXMUSIC.utils.logger import play_logs
+from DAXXMUSIC.utils.stream.stream import stream
 
 
 RADIO_URL = getenv("RADIO_URL", "http://peridot.streamguys.com:7150/Mirchi")
