@@ -17,31 +17,28 @@ async def copy_messages(_, message: Message):
 
     # Check if the path includes a message ID or a link
     if "/" in destination_path:
+        # Extract the username and message ID from the link
         try:
-            # Split the path into destination ID and message ID
-            destination_id, message_id = destination_path.split("/")
+            username, message_id = destination_path.split("/")[-2:]
             message_id = int(message_id)
         except ValueError:
-            # Check if it's a link format
-            if destination_path.startswith("@"):
-                username, message_id = destination_path.rsplit("/", 1)
-                try:
-                    # Fetch the target message to reply to
-                    target_message = await app.get_messages(username, int(message_id))
-                    print("Target message:", target_message)
-                    # Reply to the target message if it exists
-                    if hasattr(target_message, "message_id"):
-                        await message.reply_to_message.copy(target_message.chat.id, reply_to_message_id=target_message.message_id)
-                        await message.reply("Post successful.")
-                    else:
-                        await message.reply("Failed to find the specified message.")
-                    return
-                except MessageIdInvalid:
-                    await message.reply("Invalid message ID.")
-                    return
-            else:
-                await message.reply("Invalid format. Use @username/message_id or -100xxxxxxxxxx/message_id.")
+            await message.reply("Invalid link format. Use @username/message_id.")
+            return
+
+        # Fetch the target message to reply to
+        try:
+            target_message = await app.get_messages(username, message_id)
+            # Reply to the target message if it exists
+            if target_message:
+                await message.reply_to_message.copy(target_message.chat.id, reply_to_message_id=target_message.message_id)
+                await message.reply("Post successful.")
                 return
+            else:
+                await message.reply("Failed to find the specified message.")
+                return
+        except MessageIdInvalid:
+            await message.reply("Invalid message ID.")
+            return
     else:
         destination_id = destination_path
         message_id = None
@@ -52,9 +49,8 @@ async def copy_messages(_, message: Message):
             if message_id:
                 # Fetch the target message to reply to
                 target_message = await app.get_messages(destination_id, message_id)
-                print("Target message:", target_message)
                 # Reply to the target message if it exists
-                if hasattr(target_message, "message_id"):
+                if target_message:
                     await message.reply_to_message.copy(destination_id, reply_to_message_id=target_message.message_id)
                     await message.reply("Post successful.")
                 else:
