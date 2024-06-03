@@ -1,6 +1,7 @@
 from pyrogram import Client, filters
 from DAXXMUSIC import app
 from config import OWNER_ID
+from pyrogram.errors.exceptions.bad_request_400 import MessageIdInvalid
 from pyrogram.types import Message
 
 @app.on_message(filters.command(["post"], prefixes=["/", "."]) & filters.user(OWNER_ID))
@@ -14,15 +15,29 @@ async def copy_messages(_, message: Message):
 
     destination_path = command_parts[1]
 
-    # Check if the path includes a message ID
+    # Check if the path includes a message ID or a link
     if "/" in destination_path:
         try:
             # Split the path into destination ID and message ID
             destination_id, message_id = destination_path.split("/")
             message_id = int(message_id)
         except ValueError:
-            await message.reply("Invalid format. Use @username/message_id or -100xxxxxxxxxx/message_id.")
-            return
+            # Check if it's a link format
+            if destination_path.startswith("@"):
+                username, message_id = destination_path.rsplit("/", 1)
+                try:
+                    # Fetch the target message to reply to
+                    target_message = await app.get_messages(username, int(message_id))
+                    # Reply to the target message
+                    await message.reply_to_message.copy(target_message.chat.id, reply_to_message_id=target_message.message_id)
+                    await message.reply("Post successful.")
+                    return
+                except MessageIdInvalid:
+                    await message.reply("Invalid message ID.")
+                    return
+            else:
+                await message.reply("Invalid format. Use @username/message_id or -100xxxxxxxxxx/message_id.")
+                return
     else:
         destination_id = destination_path
         message_id = None
