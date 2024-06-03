@@ -87,11 +87,14 @@ async def read_message_command(bot, message):
     if not success:
         return await message.reply(f"Failed to read message: {msg}")
 
+    # Ensure we handle missing 'textBody' and 'htmlBody' fields gracefully
+    body = msg.get('textBody', msg.get('htmlBody', 'No body found.'))
+
     reply_text = (
         f"From: `{msg['from']}`\n"
         f"Subject: `{msg['subject']}`\n"
         f"Date: `{msg['date']}`\n\n"
-        f"Body: `{msg['textBody']}`\n"
+        f"Body: `{body}`\n"
     )
     await message.reply(reply_text)
 
@@ -110,71 +113,4 @@ async def email_help(bot, message):
         "Example: `From: someone@example.com\nSubject: Some subject\nDate: 2018-06-08 14:33:55\nBody: Some message body`\n"
     )
     await message.reply(help_text)
-
-# Main entry points for the bot commands
-@app.on_message(filters.command("generate_email"))
-async def generate_email(bot, message):
-    success, result = await generate_random_mailbox()
-    if not success:
-        return await message.reply(f"Failed to generate email: {result}")
-    await message.reply(f"Generated Email: `{result}`")
-
-@app.on_message(filters.command("check_mailbox"))
-async def check_mailbox(bot, message):
-    args = message.command[1:]
-    if not args:
-        return await message.reply("Usage: /check_mailbox <email_address>")
     
-    email = args[0]
-    success, messages = await get_messages(email)
-    if not success:
-        return await message.reply(f"Failed to check mailbox: {messages}")
-
-    if not messages:
-        return await message.reply("No messages found.")
-
-    reply_text = ""
-    for msg in messages:
-        reply_text += (
-            f"ID: `{msg['id']}`\n"
-            f"From: `{msg['from']}`\n"
-            f"Subject: `{msg['subject']}`\n"
-            f"Date: `{msg['date']}`\n\n"
-        )
-    await message.reply(reply_text)
-
-@app.on_message(filters.command("read_message"))
-async def read_message_command(bot, message):
-    args = message.command[1:]
-    if len(args) < 2:
-        return await message.reply("Usage: /read_message <email_address> <message_id>")
-
-    email = args[0]
-    message_id = args[1]
-    success, msg = await read_message(email, message_id)
-    if not success:
-        return await message.reply(f"Failed to read message: {msg}")
-
-    reply_text = (
-        f"From: `{msg['from']}`\n"
-        f"Subject: `{msg['subject']}`\n"
-        f"Date: `{msg['date']}`\n\n"
-        f"Body: `{msg['textBody']}`\n"
-    )
-    await message.reply(reply_text)
-
-# Command to provide usage details
-@app.on_message(filters.command("email_help"))
-async def email_help(bot, message):
-    help_text = (
-        "Here are the available email commands:\n\n"
-        "/generate_email - Generates a random email address.\n"
-        "Response: `Generated Email: <random_email@domain.com>`\n\n"
-        "/check_mailbox <email_address> - Checks the mailbox of the given email address.\n"
-        "Response: List of messages in the mailbox.\n"
-        "Example: `ID: 639\nFrom: someone@example.com\nSubject: Some subject\nDate: 2018-06-08 14:33:55`\n\n"
-        "/read_message <email_address> <message_id> - Reads a specific message from the given email address and message ID.\n"
-        "Response: Message content.\n"
-        "Example: `From: someone@example.com\nSubject: Some subject\nDate: 2018-06-08 14:33:55\nBody: Some message body`\n"
-    )
-    await message.reply(help_text)
