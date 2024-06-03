@@ -28,9 +28,12 @@ async def copy_messages(_, message: Message):
                 try:
                     # Fetch the target message to reply to
                     target_message = await app.get_messages(username, int(message_id))
-                    # Reply to the target message
-                    await message.reply_to_message.copy(target_message.chat.id, reply_to_message_id=target_message.message_id)
-                    await message.reply("Post successful.")
+                    # Reply to the target message if it exists
+                    if hasattr(target_message, "message_id"):
+                        await message.reply_to_message.copy(target_message.chat.id, reply_to_message_id=target_message.message_id)
+                        await message.reply("Post successful.")
+                    else:
+                        await message.reply("Failed to find the specified message.")
                     return
                 except MessageIdInvalid:
                     await message.reply("Invalid message ID.")
@@ -48,12 +51,16 @@ async def copy_messages(_, message: Message):
             if message_id:
                 # Fetch the target message to reply to
                 target_message = await app.get_messages(destination_id, message_id)
-                # Reply to the target message
-                await message.reply_to_message.copy(destination_id, reply_to_message_id=target_message.message_id)
+                # Reply to the target message if it exists
+                if hasattr(target_message, "message_id"):
+                    await message.reply_to_message.copy(destination_id, reply_to_message_id=target_message.message_id)
+                    await message.reply("Post successful.")
+                else:
+                    await message.reply("Failed to find the specified message.")
             else:
                 # Forward the replied-to message to the specified destination
                 await message.reply_to_message.copy(destination_id)
-            await message.reply("Post successful.")
+                await message.reply("Post successful.")
         except Exception as e:
             await message.reply(f"Failed to post: {str(e)}")
     else:
