@@ -136,13 +136,13 @@ async def draw(_: app, m: t.Message):
     global Database
     prompt = getText(m)
     if prompt is None:
-        return await m.reply_text("<code>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴘʀᴏᴍᴘᴛ. ᴜsᴀɢᴇ: /genimg <prompt></code>")
+        return await m.reply_text("<code>ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴘʀᴏᴍᴘᴛ. ᴜsᴀɢᴇ: /draw <prompt></code>")
     user = m.from_user
     data = {'prompt':prompt,'reply_to_id':m.id}
     Database[user.id] = data
     btns = paginate_models(0,Models,user.id)
     await m.reply_text(
-            text=f"**ʜᴇʟʟᴏ {m.from_user.mention}**\n\n**sᴇʟᴇᴄᴛ ʏᴏᴜʀ ɪᴍᴀɢᴇ ɢᴇɴᴇʀᴀᴛᴏʀ ᴍᴏᴅᴇʟ**",
+            text=f"Hᴇʟʟᴏ {m.from_user.mention}\n\nsᴇʟᴇᴄᴛ ʏᴏᴜʀ ɪᴍᴀɢᴇ ɢᴇɴᴇʀᴀᴛᴏʀ ᴍᴏᴅᴇʟ",
             reply_markup=t.InlineKeyboardMarkup(btns)
             )
 
@@ -170,13 +170,13 @@ async def selectModel(_:app,query:t.CallbackQuery):
             )
         return
     modelId = int(data[1])
-    await query.edit_message_text("**ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ, ɢᴇɴᴇʀᴀᴛɪɴɢ ʏᴏᴜʀ ɪᴍᴀɢᴇ.**")
+    await query.edit_message_text("ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ, ɢᴇɴᴇʀᴀᴛɪɴɢ ʏᴏᴜʀ ɪᴍᴀɢᴇ...")
     promptData = Database.get(auth_user,None)
     if promptData is None:
-        return await query.edit_message_text("sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ !!.")
+        return await query.edit_message_text("sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ!")
     img_url = await ImageGeneration(modelId,promptData['prompt'])
     if img_url is None or img_url == 2 or img_url ==1:
-        return await query.edit_message_text("sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ @iam_dacc !!")
+        return await query.edit_message_text("sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ!")
     elif img_url == 69:
         return await query.edit_message_text("ɴsғᴡ ɴᴏᴛ ᴀʟʟᴏᴡᴇᴅ !")
     images = []
@@ -195,8 +195,3 @@ async def selectModel(_:app,query:t.CallbackQuery):
         reply_to_message_id=promptData['reply_to_id']
         
     )
-
-
-
-
-
