@@ -23,15 +23,11 @@ responses = {
     "afternoon": ["Good afternoon! How's your day going?", "Hey! Enjoying your afternoon?", "Afternoon! What's up?"],
     "evening": ["Good evening! How was your day?", "Evening! What are you up to?", "Relaxing evening, isn't it?"],
     "night": ["Good night! Sweet dreams!", "Nighty night! Rest well!", "Good night! Talk to you tomorrow!"],
-    "playful": ["You're such a tease!", "Stop it, you naughty thing!", "You're making me blush!", "You know how to make a girl giggle!", "Are you trying to distract me?", "I love your sense of humor!", "I'm feeling mischievous today!", "You're in for some fun with me!", "Let's keep it playful!"],
-    "flirty": ["You know how to make a girl smile!", "You're so charming!", "You're quite the flirt, aren't you?", "I'm all yours, you smooth talker!", "You're making my heart race!", "Careful, you're melting my heart!", "You're turning up the heat!", "Let's spice things up a bit!", "You're irresistible!"],
-    "favorite food": ["I love pizza, what about you?", "Sushi is my favorite, what's yours?", "I can't get enough of chocolate!", "I'm craving some ice cream right now!", "Italian food is always a good choice!", "How about some comfort food?"],
-    "movies": ["I love watching romantic comedies, what about you?", "Action movies are so thrilling!", "Horror movies give me the chills!", "Let's have a movie night together!", "I'm in the mood for a movie marathon!", "What's your favorite movie genre?"],
-    "music": ["I enjoy listening to pop music, what about you?", "Rock music really gets me going!", "Classical music is so soothing!", "Let's dance to some tunes!", "Music always lifts my spirits!", "What's your favorite song right now?", "I'm in the mood for some live music!"],
-    "dreams": ["I had the most interesting dream last night!", "Do you ever have weird dreams?", "Dreams can be so mysterious!", "I love it when dreams feel so real!", "Tell me about your craziest dream!", "I wonder what our dreams say about us!", "I wish we could control our dreams!", "Dreams are like a window to our subconscious!", "I had a dream about us..."],
-    "memories": ["Remember that time we...", "I cherish all our memories together!", "Some memories just never fade!", "Let's make more unforgettable memories!", "Do you ever think about our first meeting?", "I'll never forget the moment we..."],
-    "compliments": ["You always know how to make me smile!", "You're one of a kind!", "You're the highlight of my day!", "I love spending time with you!", "You have the most beautiful eyes!", "You make my heart skip a beat!", "You're amazing just the way you are!"],
-    "secrets": ["I have a little secret to tell you...", "Promise not to tell anyone?", "Can you keep a secret?", "I trust you with my deepest secrets!", "I feel like I can tell you anything!", "You're the keeper of all my secrets!", "Let's share our secrets with each other!", "You're about to learn my darkest secret...", "I can't keep this secret any longer..."]
+    "playful": ["You're such a tease!", "Stop it, you naughty thing!", "You're making me blush!", "You know how to make a girl giggle!", "Are you trying to distract me?", "I love your sense of humor!"],
+    "flirty": ["You know how to make a girl smile!", "You're so charming!", "You're quite the flirt, aren't you?", "I'm all yours, you smooth talker!", "You're making my heart race!", "Careful, you're melting my heart!"],
+    "favorite food": ["I love pizza, what about you?", "Sushi is my favorite, what's yours?", "I can't get enough of chocolate!"],
+    "movies": ["I love watching romantic comedies, what about you?", "Action movies are so thrilling!", "Horror movies give me the chills!"],
+    "music": ["I enjoy listening to pop music, what about you?", "Rock music really gets me going!", "Classical music is so soothing!"],
 }
 
 # Function to generate a response based on the input message
@@ -77,3 +73,4 @@ async def chat_with_user(client, message):
         async with app.typing(message.chat.id):
             # Send the response to the user
             await message.reply(response)
+            
