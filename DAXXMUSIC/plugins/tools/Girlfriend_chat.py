@@ -60,6 +60,5 @@ async def chat_with_user(client, message):
     async with app.typing(message.chat.id):
         username = message.from_user.first_name
         response = await generate_response(message.text, username)
-        # Reply with the generated response
-        await message.reply(response)
-        
+        # Reply to the user's message
+        await message.reply(response, reply_to_message_id=message.message_id)
