@@ -68,11 +68,13 @@ async def generate_response(message_text, username):
 async def chat_with_user(client, message):
     # Simulate typing before generating a response
     await app.send_chat_action(message.chat.id, "typing")
-        # Generate a response based on the user's message
-        username = message.from_user.first_name
-        response = await generate_response(message.text, username)
-        # Simulate typing before sending the response
-        await app.send_chat_action(message.chat.id, "typing")
-            # Send the response to the user
-            await message.reply(response)
-            
+    
+    # Generate a response based on the user's message
+    username = message.from_user.first_name
+    response = await generate_response(message.text, username)
+    
+    # Simulate typing before sending the response
+    await app.send_chat_action(message.chat.id, "typing")
+    
+    # Send the response to the user
+    await message.reply(response)
