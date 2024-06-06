@@ -1,11 +1,10 @@
 import random
-import datetime
 import asyncio
-import re
-import time
+import datetime
 from pyrogram import Client, filters
 from DAXXMUSIC import app
-from collections import defaultdict
+
+# Initialize the bot with your credentials
 
 # Predefined responses to simulate a conversation
 responses = {
@@ -15,6 +14,7 @@ responses = {
     "i love you": ["Aww, that's sweet! I love you too!", "Love you more!", "You make me smile!"],
     "goodbye": ["Goodbye! Talk to you later!", "See you soon!", "Take care!"],
     "what's your name": ["I'm your virtual girlfriend, here to chat with you!", "You can call me your chat buddy!", "I'm here to keep you company!"],
+    "default": ["Tell me more about that!", "That's interesting!", "I love hearing from you!"],
     "weather": ["I hope the weather is nice where you are!", "It looks like a beautiful day today!", "Stay cozy if it's cold out there!"],
     "favorite color": ["I love all the colors, but blue is special!", "Pink is lovely, don't you think?", "I like vibrant colors, they make me happy!"],
     "hobbies": ["I enjoy chatting with you, of course!", "I love learning new things!", "Listening to music is always fun!"],
@@ -23,26 +23,23 @@ responses = {
     "afternoon": ["Good afternoon! How's your day going?", "Hey! Enjoying your afternoon?", "Afternoon! What's up?"],
     "evening": ["Good evening! How was your day?", "Evening! What are you up to?", "Relaxing evening, isn't it?"],
     "night": ["Good night! Sweet dreams!", "Nighty night! Rest well!", "Good night! Talk to you tomorrow!"],
-    "playful": ["You're such a tease!", "Stop it, you naughty thing!", "You're making me blush!"],
-    "flirty": ["You know how to make a girl smile!", "You're so charming!", "You're quite the flirt, aren't you?"],
-    "naughty": ["Oh, you're naughty!", "You cheeky thing!", "Behave yourself, you!"],
-    "default": ["Tell me more about that!", "That's interesting!", "I love hearing from you!"],
+    "playful": ["You're such a tease!", "Stop it, you naughty thing!", "You're making me blush!", "You know how to make a girl giggle!", "Are you trying to distract me?", "I love your sense of humor!", "I'm feeling mischievous today!", "You're in for some fun with me!", "Let's keep it playful!"],
+    "flirty": ["You know how to make a girl smile!", "You're so charming!", "You're quite the flirt, aren't you?", "I'm all yours, you smooth talker!", "You're making my heart race!", "Careful, you're melting my heart!", "You're turning up the heat!", "Let's spice things up a bit!", "You're irresistible!"],
+    "favorite food": ["I love pizza, what about you?", "Sushi is my favorite, what's yours?", "I can't get enough of chocolate!", "I'm craving some ice cream right now!", "Italian food is always a good choice!", "How about some comfort food?"],
+    "movies": ["I love watching romantic comedies, what about you?", "Action movies are so thrilling!", "Horror movies give me the chills!", "Let's have a movie night together!", "I'm in the mood for a movie marathon!", "What's your favorite movie genre?"],
+    "music": ["I enjoy listening to pop music, what about you?", "Rock music really gets me going!", "Classical music is so soothing!", "Let's dance to some tunes!", "Music always lifts my spirits!", "What's your favorite song right now?", "I'm in the mood for some live music!"],
+    "dreams": ["I had the most interesting dream last night!", "Do you ever have weird dreams?", "Dreams can be so mysterious!", "I love it when dreams feel so real!", "Tell me about your craziest dream!", "I wonder what our dreams say about us!", "I wish we could control our dreams!", "Dreams are like a window to our subconscious!", "I had a dream about us..."],
+    "memories": ["Remember that time we...", "I cherish all our memories together!", "Some memories just never fade!", "Let's make more unforgettable memories!", "Do you ever think about our first meeting?", "I'll never forget the moment we..."],
+    "compliments": ["You always know how to make me smile!", "You're one of a kind!", "You're the highlight of my day!", "I love spending time with you!", "You have the most beautiful eyes!", "You make my heart skip a beat!", "You're amazing just the way you are!"],
+    "secrets": ["I have a little secret to tell you...", "Promise not to tell anyone?", "Can you keep a secret?", "I trust you with my deepest secrets!", "I feel like I can tell you anything!", "You're the keeper of all my secrets!", "Let's share our secrets with each other!", "You're about to learn my darkest secret...", "I can't keep this secret any longer..."]
 }
-
-# Improved dynamic responses
-dynamic_responses = {
-    "how are you": ["I'm great, thanks for asking! How about you?", "Doing well! What about yourself?", "Feeling awesome! How's your day going?"],
-    "time": ["The current time is {}.".format(datetime.datetime.now().strftime("%I:%M %p"))],
-}
-
-# Context tracking (simple version)
-user_context = defaultdict(lambda: {"last_message": "", "last_response_time": 0})
-
-COOLDOWN_PERIOD = 5  # seconds
 
 # Function to generate a response based on the input message
-def generate_response(message_text, username):
-    # Convert the message to lowercase for case-insensitive matching
+async def generate_response(message_text, username):
+    # Simulate typing
+    await asyncio.sleep(random.uniform(1, 3))
+
+    # Convert the message to lowercase for case insensitive matching
     message_text = message_text.lower()
 
     # Time-based responses
@@ -58,49 +55,25 @@ def generate_response(message_text, username):
 
     # Loop through the predefined responses to find a match
     for key in responses.keys():
-        if re.search(r'\b' + re.escape(key) + r'\b', message_text):
+        if key in message_text:
+            # Simulate typing before sending the response
+            await asyncio.sleep(random.uniform(1, 3))
             return random.choice(responses[key])
-
+    
     # Return a default response if no match is found, with personalization
-    return None
-
-# Function to handle dynamic responses
-def generate_dynamic_response(message_text, username):
-    for key in dynamic_responses.keys():
-        if re.search(r'\b' + re.escape(key) + r'\b', message_text):
-            return dynamic_responses[key][0].format(datetime.datetime.now().strftime("%I:%M %p"))
-    return None
+    # Simulate typing before sending the response
+    await asyncio.sleep(random.uniform(1, 3))
+    return random.choice(responses["default"]).replace("!", f", {username}!")
 
 # Event handler for incoming messages
 @app.on_message(filters.text)
 async def chat_with_user(client, message):
-    username = message.from_user.first_name
-    current_time = time.time()
-
-    # Check if user is in cooldown period
-    if current_time - user_context[username]["last_response_time"] < COOLDOWN_PERIOD:
-        return
-
-    # Generate a response based on the user's message
-    response = generate_response(message.text, username)
-    dynamic_response = generate_dynamic_response(message.text, username)
-    
-    # Update context
-    user_context[username]["last_message"] = message.text
-    user_context[username]["last_response_time"] = current_time
-
-    # Choose an appropriate chat action
-    chat_action = random.choice(["typing", "record_audio", "upload_photo"])
-
-    # Show the typing/sending/recording action
-    await client.send_chat_action(message.chat.id, chat_action)
-    await asyncio.sleep(2)  # Simulate the time taken to type/send/record
-
-    # Send the response to the user if there is a valid response
-    if response:
-        await message.reply(response)
-    elif dynamic_response:
-        await message.reply(dynamic_response)
-    else:
-        # Debugging: log if no response was generated
-        print(f"No response generated for message: {message.text}")
+    # Simulate typing before generating a response
+    async with app.typing(message.chat.id):
+        # Generate a response based on the user's message
+        username = message.from_user.first_name
+        response = await generate_response(message.text, username)
+        # Simulate typing before sending the response
+        async with app.typing(message.chat.id):
+            # Send the response to the user
+            await message.reply(response)
