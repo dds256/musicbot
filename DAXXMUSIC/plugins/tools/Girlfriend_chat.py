@@ -67,14 +67,14 @@ async def generate_response(message_text, username):
 @app.on_message(filters.text)
 async def chat_with_user(client, message):
     # Simulate typing before generating a response
-    await app.send_chat_action(message.chat.id, "typing")
+    await app.send_chat_action(message.chat.id, "typing" if "typing" in ["typing", "upload_photo", "record_video", "upload_video", "record_audio", "upload_audio", "upload_document", "find_location", "record_video_note", "upload_video_note"] else "typing")
     
     # Generate a response based on the user's message
     username = message.from_user.first_name
     response = await generate_response(message.text, username)
     
     # Simulate typing before sending the response
-    await app.send_chat_action(message.chat.id, "typing")
+    await app.send_chat_action(message.chat.id, "typing" if "typing" in ["typing", "upload_photo", "record_video", "upload_video", "record_audio", "upload_audio", "upload_document", "find_location", "record_video_note", "upload_video_note"] else "typing")
     
     # Send the response to the user
     await message.reply(response)
