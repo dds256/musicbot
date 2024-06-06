@@ -1,10 +1,11 @@
 import random
 import datetime
+import asyncio
+import re
+import time
 from pyrogram import Client, filters
 from DAXXMUSIC import app
 from collections import defaultdict
-import time
-import re
 
 # Predefined responses to simulate a conversation
 responses = {
@@ -67,7 +68,7 @@ def generate_response(message_text, username):
 def generate_dynamic_response(message_text, username):
     for key in dynamic_responses.keys():
         if re.search(r'\b' + re.escape(key) + r'\b', message_text):
-            return dynamic_responses[key][0]  # Simplified for this example
+            return dynamic_responses[key][0].format(datetime.datetime.now().strftime("%I:%M %p"))
     return None
 
 # Event handler for incoming messages
@@ -100,3 +101,6 @@ async def chat_with_user(client, message):
         await message.reply(response)
     elif dynamic_response:
         await message.reply(dynamic_response)
+    else:
+        # Debugging: log if no response was generated
+        print(f"No response generated for message: {message.text}")
