@@ -5,10 +5,12 @@ from math import ceil
 import asyncio
 from DAXXMUSIC import app
 
+
 api = ApiClient()
 Models = api.getModels()['models']['image']
 
 Database = {}
+
 
 async def ImageGeneration(model,prompt):
     try:
@@ -119,7 +121,8 @@ def paginate_models(page_n: int, models: list,user_id) -> list:
     else:
         pairs += [[EqInlineKeyboardButton("⌯ ʙᴀᴄᴋ ⌯", callback_data=f"d.-1.{user_id}")]]
 
-    return pairs
+    return pairs                   
+
 
 @app.on_message(filters.command(["genimg","create","imagine","dream"]))
 async def draw(_: app, m: t.Message):
@@ -160,10 +163,10 @@ async def selectModel(_:app,query:t.CallbackQuery):
             )
         return
     modelId = int(data[1])
-    await query.edit_message_text("ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ, ɢᴇɴᴇʀᴀᴛɪɴɢ ʏᴏᴜʀ ɪᴍᴀɢᴇ....")
+    await query.edit_message_text("ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ, ɢᴇɴᴇʀᴀᴛɪɴɢ ʏᴏᴜʀ ɪᴍᴀɢᴇ...")
     promptData = Database.get(auth_user,None)
     if promptData is None:
-        return await query.edit_message_text("sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ!")
+        return await query.edit_message_text("sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ @iam_daxx !!.")
     img_url = await ImageGeneration(modelId,promptData['prompt'])
     if img_url is None or img_url == 2 or img_url ==1:
         return await query.edit_message_text("sᴏᴍᴇᴛʜɪɴɢ ᴡᴇɴᴛ ᴡʀᴏɴɢ @iam_dacc !!")
