@@ -1,7 +1,7 @@
 import random
 import datetime 
 from pyrogram import Client, filters
-from DAXXXMUSIC import app
+from DAXXMUSIC import app
 
 # Predefined responses to simulate a conversation
 responses = {
