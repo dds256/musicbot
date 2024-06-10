@@ -71,8 +71,6 @@ async def read_message(email, message_id):
                 return False, f"HTTP Error: {response.status}"
             try:
                 message = await response.json()
-                # Log the raw response for debugging
-                print("API Response:", message)
                 return True, message
             except ContentTypeError:
                 return False, "Failed to parse response"
@@ -90,7 +88,7 @@ async def read_message_command(bot, message):
         return await message.reply(f"Failed to read message: {msg}")
 
     # Ensure we handle missing 'textBody' and 'htmlBody' fields gracefully
-    body = msg.get('htmlBody') or msg.get('textBody') or 'No body found.'
+    body = msg.get('textBody', '') or msg.get('htmlBody', 'No body found.')
 
     # Handle attachments
     attachments_info = ''
