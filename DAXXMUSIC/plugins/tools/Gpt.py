@@ -15,7 +15,7 @@ async def chat_gpt(bot, message):
 
         if len(message.command) < 2:
             await message.reply_text(
-                "Example:\n\n/chatgpt Where is TajMahal?"
+                "Example:\n\n/chatgpt what's the capital of India?"
             )
         else:
             a = message.text.split(' ', 1)[1]
@@ -28,8 +28,9 @@ async def chat_gpt(bot, message):
                     end_time = time.time()
                     telegram_ping = str(round((end_time - start_time) * 1000, 3)) + " ms"
                     await message.reply_text(
-                        f" {x}  \n\nᴀɴsᴡᴇʀɪɴɢ ʙʏ ➛ [ᴄʜᴀᴛɢᴘᴛ 3.5](https://www.openai.com/chatgpt)",
-                        parse_mode=ParseMode.MARKDOWN
+                        f" {x}  \n\nᴘᴏᴡᴇʀᴇᴅ ʙʏ➛ [ᴄʜᴀᴛɢᴘᴛ 3.5](https://www.openai.com/chatgpt)",
+                        parse_mode=ParseMode.MARKDOWN,
+                        disable_web_page_preview=True
                     )
                 else:
                     await message.reply_text("No 'results' key found in the response.")
