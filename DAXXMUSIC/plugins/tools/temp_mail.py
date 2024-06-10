@@ -1,7 +1,7 @@
 import aiohttp
 from aiohttp import ContentTypeError
 from pyrogram import filters
-from DAXXMUSIC import app as app
+from DAXXMUSIC import app
 
 # Function to generate a random email address
 async def generate_random_mailbox():
@@ -88,13 +88,25 @@ async def read_message_command(bot, message):
         return await message.reply(f"Failed to read message: {msg}")
 
     # Ensure we handle missing 'textBody' and 'htmlBody' fields gracefully
-    body = msg.get('textBody', msg.get('htmlBody', 'No body found.'))
+    body = msg.get('htmlBody') or msg.get('textBody') or 'No body found.'
+
+    # Handle attachments
+    attachments_info = ''
+    if 'attachments' in msg and msg['attachments']:
+        attachments_info = '\nAttachments:\n'
+        for attachment in msg['attachments']:
+            attachments_info += (
+                f"Filename: `{attachment['filename']}`\n"
+                f"Content Type: `{attachment['contentType']}`\n"
+                f"Size: `{attachment['size']}` bytes\n"
+            )
 
     reply_text = (
         f"From: `{msg['from']}`\n"
         f"Subject: `{msg['subject']}`\n"
         f"Date: `{msg['date']}`\n\n"
         f"Body: `{body}`\n"
+        f"{attachments_info}"
     )
     await message.reply(reply_text)
 
