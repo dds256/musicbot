@@ -1,7 +1,7 @@
 import aiohttp
 from aiohttp import ContentTypeError
 from pyrogram import filters
-from DAXXMUSIC import app
+from DAXXMUSIC import app as app
 
 # Function to generate a random email address
 async def generate_random_mailbox():
@@ -71,6 +71,8 @@ async def read_message(email, message_id):
                 return False, f"HTTP Error: {response.status}"
             try:
                 message = await response.json()
+                # Log the raw response for debugging
+                print("API Response:", message)
                 return True, message
             except ContentTypeError:
                 return False, "Failed to parse response"
