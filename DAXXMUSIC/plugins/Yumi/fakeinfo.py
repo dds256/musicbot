@@ -37,7 +37,7 @@ async def address(client, message):
         id_value = user_data['id']['value']
 
         caption = f"""
-**{user}, here's your fake identity:**
+**{user.mention}, here's your fake identity:**
 
 **ɴᴀᴍᴇ** ⇢ `{name}`
 **ᴀᴅᴅʀᴇss** ⇢ `{address}`
